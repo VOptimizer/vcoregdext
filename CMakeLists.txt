@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.3.0)
 project(vcoregdext VERSION 0.1.0 LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -46,5 +46,9 @@ include_directories("${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gdextension"
 )
 add_subdirectory(third-party/vcore/lib libVCore)
 
-add_library(${PROJECT_NAME} SHARED main.cpp)
+set(SRCS "${PROJECT_SOURCE_DIR}/src/VoxelModel.cpp")
+
+include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
+
+add_library(${PROJECT_NAME} SHARED main.cpp ${SRCS})
 target_link_libraries(${PROJECT_NAME} PRIVATE godot-cpp VCore)
