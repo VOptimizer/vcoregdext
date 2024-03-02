@@ -3,11 +3,17 @@
 
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/texture.hpp>
 #include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/classes/ref.hpp>
 #include <VCore/VCore.hpp>
+
+#include "Helper/StaticType.hpp"
 
 namespace VCoreGDExt
 {
+    using StaticRID = TStaticType<godot::RID>;
+
     class VMaterial : public godot::Material
     {
         GDCLASS(VMaterial, godot::Material)
@@ -87,7 +93,7 @@ namespace VCoreGDExt
             void SetTransparency(float _Transparency) 
             {
                 m_Material->Transparency = _Transparency;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "alpha", _Transparency);
+                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "alpha", 1.0 - _Transparency);
             }
 
             /**
@@ -98,7 +104,27 @@ namespace VCoreGDExt
                 return m_Material;
             }
 
-            static void InitShaderCode();
+            void SetAlbedoTexture(const godot::Ref<godot::Texture> &_Texture)
+            {
+                m_Albedo = _Texture;
+                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "texture_albedo", m_Albedo->get_rid());
+            }
+
+            godot::Ref<godot::Texture> GetAlbedoTexture() const
+            {
+                return m_Albedo;
+            }
+
+            void SetEmissionTexture(const godot::Ref<godot::Texture> &_Texture)
+            {
+                m_Emission = _Texture;
+                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "texture_emission", m_Emission->get_rid());
+            }
+
+            godot::Ref<godot::Texture> GetEmissionTexture() const
+            {
+                return m_Emission;
+            }
 
             godot::RID _get_shader_rid() const override { return Shader; }
             bool _can_do_next_pass() const override { return true; }
@@ -107,11 +133,15 @@ namespace VCoreGDExt
             ~VMaterial() {}
 
         protected:
-            static godot::RID Shader;
+            static StaticRID Shader;
 
             VCore::Material m_Material;
+            godot::Ref<godot::Texture> m_Albedo;
+            godot::Ref<godot::Texture> m_Emission;
+
 	        static void _bind_methods();
 
+            static void InitShaderCode();
             void InitShaderParameters();
     };
 } // namespace VCoreGDExt

@@ -3,6 +3,7 @@
 
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
+#include <godot_cpp/classes/image_texture.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <VCore/VCore.hpp>
 
@@ -31,6 +32,7 @@ namespace VCoreGDExt
 	        static void _bind_methods();
 
             godot::Ref<godot::ArrayMesh> CreateMesh(const VCore::Mesh &_Mesh);
+            godot::Ref<godot::ImageTexture> ConvertTextureToGodot(const VCore::Texture &_Texture);
     };
 } // namespace VCoreGDExt
 

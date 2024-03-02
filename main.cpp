@@ -4,6 +4,8 @@
 
 #include <VMaterial.hpp>
 #include <VModel.hpp>
+#include <VMesher.hpp>
+#include <VLoader.hpp>
 
 using namespace godot;
 
@@ -15,8 +17,10 @@ void InitializeVCoreGDExtension(ModuleInitializationLevel _Level)
     // Register VCore Bindings
     ClassDB::register_class<VCoreGDExt::VModel>();
     ClassDB::register_class<VCoreGDExt::VMaterial>();
+    ClassDB::register_class<VCoreGDExt::VMesher>();
+    ClassDB::register_class<VCoreGDExt::VLoader>();
 
-    VCoreGDExt::VMaterial::InitShaderCode();
+    // VCoreGDExt::VMaterial::InitShaderCode();
 }
 
 void DeinitializeVCoreGDExtension(ModuleInitializationLevel _Level)

@@ -48,7 +48,9 @@ add_subdirectory(third-party/vcore/lib libVCore)
 
 set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMesher.cpp"
-         "${PROJECT_SOURCE_DIR}/src/VMesher.cpp")
+         "${PROJECT_SOURCE_DIR}/src/VMaterial.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VLoader.cpp"
+         "${PROJECT_SOURCE_DIR}/src/GodotFileStream.cpp")
 
 include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
 

@@ -1,4 +1,5 @@
 #include <VMesher.hpp>
+#include <godot_cpp/classes/ref.hpp>
 
 namespace VCoreGDExt
 {
@@ -40,10 +41,39 @@ namespace VCoreGDExt
             meshArray[godot::ArrayMesh::ARRAY_INDEX] = indices;
 
             result->add_surface_from_arrays(godot::ArrayMesh::PRIMITIVE_TRIANGLES, meshArray);
-            result->surface_set_material(surfaceIdx, memnew(VMaterial(surface.FaceMaterial)));
+
+            godot::Ref<VMaterial> material = memnew(VMaterial(surface.FaceMaterial));
+
+            auto it = _Mesh->Textures.find(VCore::TextureType::DIFFIUSE);
+            if(it != _Mesh->Textures.end())
+                material->SetAlbedoTexture(ConvertTextureToGodot(it->second));
+
+            it = _Mesh->Textures.find(VCore::TextureType::EMISSION);
+            if(it != _Mesh->Textures.end())
+                material->SetEmissionTexture(ConvertTextureToGodot(it->second));
+            
+            result->surface_set_material(surfaceIdx, material);
             surfaceIdx++;
         }
 
         return result;
+    }
+
+    godot::Ref<godot::ImageTexture> VMesher::ConvertTextureToGodot(const VCore::Texture &_Texture)
+    {
+        // Converts the colorpalette to a texture for godot.
+        godot::Ref<godot::Image> img = godot::Image::create(_Texture->GetSize().x, _Texture->GetSize().y, false, godot::Image::Format::FORMAT_RGBA8);
+        for (size_t x = 0; x < _Texture->GetSize().x; x++)
+        {
+            for (size_t y = 0; y < _Texture->GetSize().y; y++)
+            {
+                VCore::CColor c;
+                c.FromRGBA(_Texture->GetPixel(VCore::Math::Vec2ui(x, y)));
+
+                img->set_pixel(x, y, godot::Color(c.R / 255.f, c.G / 255.f, c.B / 255.f, c.A / 255.f));
+            }
+        }
+
+        return godot::ImageTexture::create_from_image(img);
     }
 } // namespace VCoreGDExt
