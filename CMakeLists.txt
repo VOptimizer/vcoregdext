@@ -46,7 +46,9 @@ include_directories("${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gdextension"
 )
 add_subdirectory(third-party/vcore/lib libVCore)
 
-set(SRCS "${PROJECT_SOURCE_DIR}/src/VoxelModel.cpp")
+set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VMesher.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VMesher.cpp")
 
 include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
 

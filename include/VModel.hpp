@@ -1,7 +1,7 @@
-#ifndef VOXELMODEL_HPP
-#define VOXELMODEL_HPP
+#ifndef VModel_HPP
+#define VModel_HPP
 
-#include "VoxelMaterial.hpp"
+#include "VMaterial.hpp"
 #include <Convert.hpp>
 
 #include <godot_cpp/classes/ref.hpp>
@@ -12,12 +12,12 @@
 
 namespace VCoreGDExt
 {
-    class VoxelModel : public godot::RefCounted
+    class VModel : public godot::RefCounted
     {
-        GDCLASS(VoxelModel, godot::RefCounted)
+        GDCLASS(VModel, godot::RefCounted)
         public:
-            VoxelModel() : m_Model(new VCore::CVoxelModel()) {}
-            VoxelModel(const VCore::VoxelModel &_Model) : m_Model(_Model) 
+            VModel() : m_Model(new VCore::CVoxelModel()) {}
+            VModel(const VCore::VoxelModel &_Model) : m_Model(_Model) 
             {
                 m_Model->Materials.push_back(std::make_shared<VCore::CMaterial>());
             }
@@ -40,8 +40,8 @@ namespace VCoreGDExt
             /**
              * @brief Must be called for each new material to be used in the model.
              */
-            int AddMaterial(const godot::Ref<VoxelMaterial> &_Material);
-            godot::Ref<VoxelMaterial> GetMaterial(int _Index);
+            int AddMaterial(const godot::Ref<VMaterial> &_Material);
+            godot::Ref<VMaterial> GetMaterial(int _Index);
 
             godot::Dictionary GetVoxel(const godot::Vector3i &_Pos);
             void SetVoxel(const godot::Vector3i &_Pos, int _MaterialIdx, const godot::Color &_Color);
@@ -65,7 +65,7 @@ namespace VCoreGDExt
                 return m_Model;
             }
 
-            ~VoxelModel() {}
+            ~VModel() {}
 
         protected:
             VCore::VoxelModel m_Model;

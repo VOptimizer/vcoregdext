@@ -2,8 +2,8 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include <VoxelMaterial.hpp>
-#include <VoxelModel.hpp>
+#include <VMaterial.hpp>
+#include <VModel.hpp>
 
 using namespace godot;
 
@@ -13,8 +13,10 @@ void InitializeVCoreGDExtension(ModuleInitializationLevel _Level)
         return;
 
     // Register VCore Bindings
-    ClassDB::register_class<VCoreGDExt::VoxelModel>();
-    ClassDB::register_class<VCoreGDExt::VoxelMaterial>();
+    ClassDB::register_class<VCoreGDExt::VModel>();
+    ClassDB::register_class<VCoreGDExt::VMaterial>();
+
+    VCoreGDExt::VMaterial::InitShaderCode();
 }
 
 void DeinitializeVCoreGDExtension(ModuleInitializationLevel _Level)
