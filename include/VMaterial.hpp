@@ -3,7 +3,9 @@
 
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <godot_cpp/classes/standard_material3d.hpp>
 #include <godot_cpp/classes/texture.hpp>
+#include <godot_cpp/classes/texture2d.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/classes/ref.hpp>
 #include <VCore/VCore.hpp>
@@ -96,14 +98,6 @@ namespace VCoreGDExt
                 godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "alpha", 1.0 - _Transparency);
             }
 
-            /**
-             * @brief For internal use only!
-             */
-            VCore::Material GetMaterial()
-            {
-                return m_Material;
-            }
-
             void SetAlbedoTexture(const godot::Ref<godot::Texture> &_Texture)
             {
                 m_Albedo = _Texture;
@@ -126,9 +120,23 @@ namespace VCoreGDExt
                 return m_Emission;
             }
 
+            /**
+             * @return Converts this material to a standard godot material. This is only needed if don't want to deploy this library with your project, and just want to import assets at development time.
+            */
+            godot::Ref<godot::StandardMaterial3D> ToStandardMaterial3D() const;
+
+            /**
+             * @brief For internal use only!
+             */
+            VCore::Material GetMaterial()
+            {
+                return m_Material;
+            }
+
             godot::RID _get_shader_rid() const override { return Shader; }
             bool _can_do_next_pass() const override { return true; }
 	        bool _can_use_render_priority() const override { return true; }
+            godot::Shader::Mode _get_shader_mode() const override { return godot::Shader::Mode::MODE_SPATIAL; }
 
             ~VMaterial() {}
 

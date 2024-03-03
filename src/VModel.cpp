@@ -6,7 +6,7 @@ namespace VCoreGDExt
     {
         godot::ClassDB::bind_method(godot::D_METHOD("get_name"), &VModel::GetName);
         godot::ClassDB::bind_method(godot::D_METHOD("set_name"), &VModel::SetName);
-        godot::ClassDB::add_property("VModel", godot::PropertyInfo(godot::Variant::STRING, "name"), "set_name", "get_name");
+        godot::ClassDB::add_property(get_class_static(), godot::PropertyInfo(godot::Variant::STRING, "name"), "set_name", "get_name");
 
         godot::ClassDB::bind_method(godot::D_METHOD("get_bbox"), &VModel::GetBBox);
         godot::ClassDB::bind_method(godot::D_METHOD("clear"), &VModel::Clear);

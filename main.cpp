@@ -6,6 +6,7 @@
 #include <VModel.hpp>
 #include <VMesher.hpp>
 #include <VLoader.hpp>
+#include <VSceneNode.hpp>
 
 using namespace godot;
 
@@ -17,6 +18,7 @@ void InitializeVCoreGDExtension(ModuleInitializationLevel _Level)
     // Register VCore Bindings
     ClassDB::register_class<VCoreGDExt::VModel>();
     ClassDB::register_class<VCoreGDExt::VMaterial>();
+    ClassDB::register_class<VCoreGDExt::VSceneNode>();
     ClassDB::register_class<VCoreGDExt::VMesher>();
     ClassDB::register_class<VCoreGDExt::VLoader>();
 

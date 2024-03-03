@@ -47,6 +47,9 @@ namespace VCoreGDExt
             void SetVoxel(const godot::Vector3i &_Pos, int _MaterialIdx, const godot::Color &_Color);
             void RemoveVoxel(const godot::Vector3i &_Pos);
 
+            /**
+             * @brief Clears all voxels.
+             */
             void Clear()
             {
                 m_Model->Clear();

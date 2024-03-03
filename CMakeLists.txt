@@ -41,10 +41,10 @@ endif()
 # If you skip this step, VCore might end up using its default config instead of the Godot one.
 include_directories("${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gdextension"
                     "${PROJECT_SOURCE_DIR}/third-party/godot-cpp/include"
-                    "${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gen/include"
+                    "${CMAKE_CURRENT_BINARY_DIR}/third-party/godot-cpp/gen/include"
                     "${PROJECT_SOURCE_DIR}/include"
 )
-add_subdirectory(third-party/vcore/lib libVCore)
+add_subdirectory(third-party/vcore/lib)
 
 set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMesher.cpp"

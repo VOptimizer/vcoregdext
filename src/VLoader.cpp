@@ -36,5 +36,6 @@ namespace VCoreGDExt
     {
         godot::ClassDB::bind_method(godot::D_METHOD("load"), &VLoader::Load);
         godot::ClassDB::bind_method(godot::D_METHOD("get_models"), &VLoader::GetModels);
+        godot::ClassDB::bind_method(godot::D_METHOD("get_scene_tree"), &VLoader::GetSceneTree);
     }
 } // namespace VCoreGDExt

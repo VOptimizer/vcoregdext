@@ -3,6 +3,7 @@
 
 #include <godot_cpp/classes/ref.hpp>
 #include <VCore/VCore.hpp>
+#include "VSceneNode.hpp"
 
 namespace VCoreGDExt
 {
@@ -18,6 +19,17 @@ namespace VCoreGDExt
              * @return Returns either OK on success or an error code otherwise.
              */
             godot::Error Load(const godot::String &_Path);
+
+            /**
+             * @return Returns the scenetree of the file. 
+             */
+            godot::Ref<VSceneNode> GetSceneTree() const
+            {
+                if(!m_Loader || !m_Loader->GetSceneTree())
+                    return nullptr;
+
+                return memnew(VSceneNode(m_Loader->GetSceneTree()));
+            }
 
             /**
              * @return Returns an array of VModels of the last loaded file.

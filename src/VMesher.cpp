@@ -5,7 +5,48 @@ namespace VCoreGDExt
 {
     void VMesher::_bind_methods()
     {
+        godot::ClassDB::bind_integer_constant(get_class_static(), "MesherTypes", "SIMPLE", (int)VCore::MesherTypes::SIMPLE);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "MesherTypes", "GREEDY", (int)VCore::MesherTypes::GREEDY);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "MesherTypes", "MARCHING_CUBES", (int)VCore::MesherTypes::MARCHING_CUBES);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "MesherTypes", "GREEDY_CHUNKED", (int)VCore::MesherTypes::GREEDY_CHUNKED);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "MesherTypes", "GREEDY_TEXTURED", (int)VCore::MesherTypes::GREEDY_TEXTURED);
+
         godot::ClassDB::bind_method(godot::D_METHOD("generate_chunks"), &VMesher::GenerateChunks);
+        godot::ClassDB::bind_method(godot::D_METHOD("generate_mesh"), &VMesher::GenerateMesh);
+        godot::ClassDB::bind_method(godot::D_METHOD("generate_scene"), &VMesher::GenerateScene);
+
+        godot::ClassDB::bind_method(godot::D_METHOD("set_mesher_type"), &VMesher::SetMesherType);
+        godot::ClassDB::bind_method(godot::D_METHOD("get_mesher_type"), &VMesher::GetMesherType);
+        godot::ClassDB::add_property(get_class_static(), godot::PropertyInfo(godot::Variant::INT, "mesher_type", godot::PROPERTY_HINT_ENUM, "SIMPLE,GREEDY,MARCHING_CUBES,GREEDY_CHUNKED,GREEDY_TEXTURED"), "set_mesher_type", "get_mesher_type");
+    }
+
+    godot::Array VMesher::GenerateScene(const godot::Ref<VSceneNode> _SceneTree, bool _MergeChildren)
+    {
+        godot::Array result;
+        auto meshes = m_Mesher->GenerateScene(_SceneTree->GetSceneNode());
+        for (auto &&mesh : meshes)
+        {
+            godot::Dictionary entry;
+            entry["name"] = mesh->Name.c_str();
+            entry["mesh"] = CreateMesh(mesh);
+            entry["transform"] = godot::Transform3D(
+                mesh->ModelMatrix.x.x, mesh->ModelMatrix.y.x, mesh->ModelMatrix.z.x,
+                mesh->ModelMatrix.x.y, mesh->ModelMatrix.y.y, mesh->ModelMatrix.z.y,
+                mesh->ModelMatrix.x.z, mesh->ModelMatrix.y.z, mesh->ModelMatrix.z.z,
+                mesh->ModelMatrix.x.w, mesh->ModelMatrix.y.w, mesh->ModelMatrix.z.w
+            );
+            result.push_back(entry);
+        }
+        return result;
+    }
+
+    godot::Ref<godot::ArrayMesh> VMesher::GenerateMesh(godot::Ref<VModel> _Model)
+    {
+        auto mesh = m_Mesher->GenerateMesh(_Model->GetModel());
+        if(mesh)
+            return CreateMesh(mesh);
+
+        return nullptr;
     }
 
     godot::Array VMesher::GenerateChunks(godot::Ref<VModel> _Model, bool _OnlyDirtyChunks)
@@ -24,6 +65,16 @@ namespace VCoreGDExt
         godot::Ref<godot::ArrayMesh> result = memnew(godot::ArrayMesh());
         godot::Array meshArray;
         meshArray.resize(godot::ArrayMesh::ARRAY_MAX);
+
+        // Converts all textures to godot ones.
+        godot::Dictionary textures;
+        auto it = _Mesh->Textures.find(VCore::TextureType::DIFFIUSE);
+        if(it != _Mesh->Textures.end())
+            textures[(int)VCore::TextureType::DIFFIUSE] = ConvertTextureToGodot(it->second);
+
+        it = _Mesh->Textures.find(VCore::TextureType::EMISSION);
+        if(it != _Mesh->Textures.end())
+            textures[(int)VCore::TextureType::EMISSION] = ConvertTextureToGodot(it->second);
 
         int surfaceIdx = 0;
         for (auto &&surface : _Mesh->Surfaces)
@@ -44,13 +95,11 @@ namespace VCoreGDExt
 
             godot::Ref<VMaterial> material = memnew(VMaterial(surface.FaceMaterial));
 
-            auto it = _Mesh->Textures.find(VCore::TextureType::DIFFIUSE);
-            if(it != _Mesh->Textures.end())
-                material->SetAlbedoTexture(ConvertTextureToGodot(it->second));
+            if(textures.has((int)VCore::TextureType::DIFFIUSE))
+                material->SetAlbedoTexture(textures[(int)VCore::TextureType::DIFFIUSE]);
 
-            it = _Mesh->Textures.find(VCore::TextureType::EMISSION);
-            if(it != _Mesh->Textures.end())
-                material->SetEmissionTexture(ConvertTextureToGodot(it->second));
+            if(textures.has((int)VCore::TextureType::EMISSION))
+                material->SetEmissionTexture(textures[(int)VCore::TextureType::EMISSION]);
             
             result->surface_set_material(surfaceIdx, material);
             surfaceIdx++;
