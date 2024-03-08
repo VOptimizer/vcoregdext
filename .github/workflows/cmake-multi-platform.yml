@@ -52,7 +52,8 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        OS=${{ runner.os }} echo "os=${OS,,}" >> "$GITHUB_OUTPUT"
+        OS=${{ runner.os }} 
+        echo "os=${OS,,}" >> "$GITHUB_OUTPUT"
 
     # Reduces build times
     - name: Restore gdextension
@@ -63,7 +64,7 @@ jobs:
         key: ${{ runner.os }}-gdextension
 
     - name: Debug
-      run: echo ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }}
+      run: echo ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }} ${{ steps.strings.outputs.os }}
 
     - if: ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }}
       name: Configure CMake
