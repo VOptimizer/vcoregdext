@@ -59,6 +59,12 @@ include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
 add_library(${PROJECT_NAME} SHARED main.cpp ${SRCS})
 
 if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:
+            TYPED_METHOD_BIND
+        >
+    )
+
     target_link_options(${PROJECT_NAME} PRIVATE
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
             -static-libgcc
