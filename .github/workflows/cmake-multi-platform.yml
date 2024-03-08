@@ -32,9 +32,11 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            static_lib_ext: lib
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            static_lib_ext: a
         exclude:
           - os: windows-latest
             c_compiler: clang
@@ -87,7 +89,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/libgodot-cpp.${{ steps.strings.outputs.os }}.64
+        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/libgodot-cpp.${{ steps.strings.outputs.os }}.64.${{ matrix.static_lib_ext }
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
