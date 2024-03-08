@@ -4,7 +4,6 @@ name: Build of vcoregdext
 
 on:
   push:
-    branches: [ "main" ]
     tags:
       - '*'
   pull_request:
