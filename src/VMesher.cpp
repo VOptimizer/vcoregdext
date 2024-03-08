@@ -29,6 +29,7 @@ namespace VCoreGDExt
             godot::Dictionary entry;
             entry["name"] = mesh->Name.c_str();
             entry["mesh"] = CreateMesh(mesh);
+            entry["frameTime"] = mesh->FrameTime;
             entry["transform"] = godot::Transform3D(
                 mesh->ModelMatrix.x.x, mesh->ModelMatrix.y.x, mesh->ModelMatrix.z.x,
                 mesh->ModelMatrix.x.y, mesh->ModelMatrix.y.y, mesh->ModelMatrix.z.y,

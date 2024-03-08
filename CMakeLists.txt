@@ -46,6 +46,8 @@ include_directories("${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gdextension"
 )
 add_subdirectory(third-party/vcore/lib)
 
+add_dependencies(VCore godot-cpp)
+
 set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMesher.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMaterial.cpp"
@@ -55,4 +57,13 @@ set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
 include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
 
 add_library(${PROJECT_NAME} SHARED main.cpp ${SRCS})
+target_link_options(${PROJECT_NAME} PRIVATE
+	$<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
+		-static-libgcc
+		-static-libstdc++
+        -static
+		-Wl,-R,'$$ORIGIN'
+	>
+)
 target_link_libraries(${PROJECT_NAME} PRIVATE godot-cpp VCore)
+add_dependencies(${PROJECT_NAME} VCore godot-cpp)
