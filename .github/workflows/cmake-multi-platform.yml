@@ -70,7 +70,7 @@ jobs:
     - name: Debug
       run: |
         echo ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }} ${{ steps.strings.outputs.os }}
-        ls ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin
+        ls ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/${{ matrix.sub_dir }}
 
     - if: ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }}
       name: Configure CMake
