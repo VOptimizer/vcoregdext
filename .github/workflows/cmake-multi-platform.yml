@@ -89,7 +89,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/libgodot-cpp.${{ steps.strings.outputs.os }}.64.${{ matrix.static_lib_ext }
+        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/libgodot-cpp.${{ steps.strings.outputs.os }}.64.${{ matrix.static_lib_ext }}
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
