@@ -52,8 +52,18 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        OS=${{ runner.os }} echo "os=${INPUT,,}" >> "$GITHUB_OUTPUT"
 
-    - name: Configure CMake
+    # Reduces build times
+    - name: Restore gdextension
+      id: cache-gdextension-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp
+        key: ${{ runner.os }}-gdextension
+
+    - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
@@ -64,13 +74,18 @@ jobs:
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
-    # Reduces build times
-    - name: Restore gdextension
-      id: cache-gdextension-restore
-      uses: actions/cache/restore@v4
-      with:
-        path: ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp
-        key: ${{ runner.os }}-gdextension
+    - if: ${{ steps.cache-npm.outputs.cache-hit == 'true' }}
+      name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/libgodot-cpp.${{ steps.strings.outputs.os }}.64
+        -S ${{ github.workspace }}
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
