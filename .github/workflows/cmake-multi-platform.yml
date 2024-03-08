@@ -32,13 +32,11 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
-            static_lib_ext: lib
-            sub_dir: Release/
+            godot_static_lib: Release/godot-cpp.windows.release.64.lib
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
-            static_lib_ext: a
-            sub_dir: ""
+            godot_static_lib: libgodot-cpp.linux.release.64.a
         exclude:
           - os: windows-latest
             c_compiler: clang
@@ -56,8 +54,6 @@ jobs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-        OS=${{ runner.os }} 
-        echo "os=${OS,,}" >> "$GITHUB_OUTPUT"
 
     # Reduces build times
     - name: Restore gdextension
@@ -66,11 +62,6 @@ jobs:
       with:
         path: ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp
         key: ${{ runner.os }}-gdextension
-
-    - name: Debug
-      run: |
-        echo ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }} ${{ steps.strings.outputs.os }}
-        ls ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/${{ matrix.sub_dir }}
 
     - if: ${{ steps.cache-gdextension-restore.outputs.cache-hit != 'true' }}
       name: Configure CMake
@@ -93,7 +84,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/${{ matrix.sub_dir }}libgodot-cpp.${{ steps.strings.outputs.os }}.release.64.${{ matrix.static_lib_ext }}
+        -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/${{ matrix.godot_static_lib }}
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
