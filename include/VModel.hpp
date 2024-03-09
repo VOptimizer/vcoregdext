@@ -61,9 +61,9 @@ namespace VCoreGDExt
                 m_Model->Clear();
             }
 
-            size_t GetBlockCount()
+            uint64_t GetBlockCount()
             {
-                return m_Model->GetBlockCount();
+                return (uint64_t)m_Model->GetBlockCount();
             }
 
             /**

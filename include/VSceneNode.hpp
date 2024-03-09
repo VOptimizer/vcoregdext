@@ -79,12 +79,12 @@ namespace VCoreGDExt
                 return memnew(VModel(m_Node->Mesh));
             }
 
-            size_t GetChildrenCount() const 
+            uint64_t GetChildrenCount() const 
             {
-                return m_Node->GetChildrenCount();
+                return (uint64_t)m_Node->GetChildrenCount();
             }
 
-            godot::Ref<VSceneNode> GetChild(size_t _Index)
+            godot::Ref<VSceneNode> GetChild(uint64_t _Index)
             {
                 auto node = (*m_Node)[_Index];
                 if(!node)
