@@ -36,13 +36,13 @@ jobs:
             c_compiler: cl
             cpp_compiler: cl
             godot_static_lib: Release/godot-cpp.windows.release.64.lib
-            vcore_lib: \vcoregdext.dll
+            vcore_lib: vcoregdext.dll
             sub_dir: /Release
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             godot_static_lib: libgodot-cpp.linux.release.64.a
-            vcore_lib: /libvcoregdext.so
+            vcore_lib: libvcoregdext.so
             sub_dir: ""
           # - os: macos-latest
           #   c_compiler: clang
@@ -125,13 +125,13 @@ jobs:
 
     - name: Copy
       if: startsWith(matrix.os, 'windows')
-      run: mv ${{ steps.strings.outputs.build-output-dir }}${{ matrix.sub_dir }}${{ matrix.vcore_lib }} ${{ steps.strings.outputs.build-output-dir }}
+      run: mv ${{ steps.strings.outputs.build-output-dir }}${{ matrix.sub_dir }}/${{ matrix.vcore_lib }} ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         generate_release_notes: true
-        files: ${{ steps.strings.outputs.build-output-dir }}${{ matrix.vcore_lib }}
+        files: ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.vcore_lib }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
