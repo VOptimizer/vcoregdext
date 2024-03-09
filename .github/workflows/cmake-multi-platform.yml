@@ -4,7 +4,7 @@ name: Build of vcoregdext
 
 on:
   push:
-    branches: [ "main" ]
+    # branches: [ "main" ]
     tags:
       - '*'
   pull_request:
@@ -121,7 +121,7 @@ jobs:
         ls ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.sub_dir }}
 
     - name: Copy
-      if: startsWith(${{ matrix.os }}, "windows")
+      if: startsWith(matrix.os, 'windows')
       run: mv ${{ steps.strings.outputs.build-output-dir }}${{ matrix.sub_dir }}${{ matrix.vcore_lib }} ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Release
