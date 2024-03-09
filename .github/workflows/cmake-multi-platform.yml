@@ -103,6 +103,8 @@ jobs:
     - name: Save gdextension
       id: cache-gdextension-save
       uses: actions/cache/save@v4
+      # Cache only on branch
+      if: "!startsWith(github.ref, 'refs/tags/')"
       with:
         path: ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp
         key: ${{ runner.os }}-gdextension
