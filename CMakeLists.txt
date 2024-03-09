@@ -73,6 +73,8 @@ if(WIN32)
             -Wl,-R,'$$ORIGIN'
         >
     )
+else(WIN32)
+    target_compile_options(${PROJECT_NAME} PRIVATE -fno-diagnostics-show-template-tree)
 endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE godot-cpp VCore)

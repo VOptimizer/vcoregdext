@@ -112,6 +112,11 @@ jobs:
         path: ${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp
         key: ${{ runner.os }}-gdextension
 
+    - name: Debug
+      run: |
+        ls ${{ steps.strings.outputs.build-output-dir }}/
+        ls ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.vcore_lib }}
+
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
