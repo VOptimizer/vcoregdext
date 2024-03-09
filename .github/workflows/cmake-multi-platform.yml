@@ -37,14 +37,12 @@ jobs:
             cpp_compiler: cl
             godot_static_lib: Release/godot-cpp.windows.release.64.lib
             vcore_lib: \vcoregdext.dll
-            build_dir: \build
             sub_dir: /Release
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             godot_static_lib: libgodot-cpp.linux.release.64.a
             vcore_lib: /libvcoregdext.so
-            build_dir: /build
             sub_dir: ""
           # - os: macos-latest
           #   c_compiler: clang
@@ -69,7 +67,7 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}${{ matrix.build_dir }}" >> "$GITHUB_OUTPUT"
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     # Reduces build times
     - name: Restore gdextension
@@ -123,7 +121,7 @@ jobs:
         ls ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.sub_dir }}
 
     - name: Copy
-      if: startstartsWith(${{ matrix.os }}, "windows")
+      if: startsWith(${{ matrix.os }}, "windows")
       run: mv ${{ steps.strings.outputs.build-output-dir }}${{ matrix.sub_dir }}${{ matrix.vcore_lib }} ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Release
