@@ -19,7 +19,7 @@ compatibility_minimum = "4.2"
 
 windows.release.x86_64 = "res://vcoregdext.dll"
 linux.release.x86_64 = "res://libvcoregdext.so"
-macos.release.x86_64 = "res://libvcoregdext.framework"
+macos.release.x86_64 = "res://libvcoregdext.dylib"
 ```
 
 ## How to build
