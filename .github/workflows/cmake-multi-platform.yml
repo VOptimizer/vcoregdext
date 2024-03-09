@@ -67,7 +67,10 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        build_output_dir="${{ github.workspace }}/build"
+        # Replace backslashes with forward slashes
+        build_output_dir="${build_output_dir//\\//}"
+        echo "build-output-dir=${build_output_dir}" >> "$GITHUB_OUTPUT"
 
     # Reduces build times
     - name: Restore gdextension
