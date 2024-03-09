@@ -9,6 +9,9 @@
 
 namespace VCoreGDExt
 {
+    /**
+     * @brief A scene node represents the Transform of a voxel model in 3d space.
+     */
     class VSceneNode : public godot::RefCounted
     {
         GDCLASS(VSceneNode, godot::RefCounted)

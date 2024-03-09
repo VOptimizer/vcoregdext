@@ -12,6 +12,9 @@
 
 namespace VCoreGDExt
 {
+    /**
+     * @brief A voxel model represents a collection of voxels, textures and materials.
+     */
     class VModel : public godot::RefCounted
     {
         GDCLASS(VModel, godot::RefCounted)
@@ -32,6 +35,9 @@ namespace VCoreGDExt
                 m_Model->Name = _Name.utf8().get_data();
             }
 
+            /**
+             * @return Returns the bounding box of a voxel model inside the voxel grid.
+             */
             godot::AABB GetBBox() const
             {
                 return godot::AABB(Convert::ToGDVec3(m_Model->BBox.Beg), Convert::ToGDVec3(m_Model->BBox.GetSize()));

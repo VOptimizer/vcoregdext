@@ -27,7 +27,7 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release]
         c_compiler: [clang, cl]
         include:
@@ -35,14 +35,23 @@ jobs:
             c_compiler: cl
             cpp_compiler: cl
             godot_static_lib: Release/godot-cpp.windows.release.64.lib
+            vcore_lib: Release/vcoregdext.dll
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             godot_static_lib: libgodot-cpp.linux.release.64.a
+            vcore_lib: libvcoregdext.so
+          - os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            godot_static_lib: libgodot-cpp.macos.release.64.a
+            vcore_lib: libvcoregdext.framework
         exclude:
           - os: windows-latest
             c_compiler: clang
           - os: ubuntu-latest
+            c_compiler: cl
+          - os: macos-latest
             c_compiler: cl
 
     steps:
@@ -74,6 +83,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
@@ -86,6 +96,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
         -DPREBUILT_GODOT_PATH=${{ steps.strings.outputs.build-output-dir }}/third-party/godot-cpp/bin/${{ matrix.godot_static_lib }}
         -S ${{ github.workspace }}
         -DCMAKE_POSITION_INDEPENDENT_CODE=ON
@@ -106,6 +117,6 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/')
       with:
         generate_release_notes: true
-        files: ${{ steps.strings.outputs.build-output-dir }}/libvcoregdext.*
+        files: ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.vcore_lib }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

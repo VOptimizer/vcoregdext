@@ -12,6 +12,9 @@
 
 namespace VCoreGDExt
 {
+    /**
+     * @brief To turn a VModel into a useable mesh for godot you need this class.
+    */
     class VMesher : public godot::RefCounted
     {
         GDCLASS(VMesher, godot::RefCounted)

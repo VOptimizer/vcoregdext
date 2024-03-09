@@ -7,6 +7,9 @@
 
 namespace VCoreGDExt
 {
+    /**
+     * @brief The loader class allows you to load all supported voxel formats. For a complete list of all supported formats, please visit https://github.com/VOptimizer/VCore/tree/master/Docs/Voxelformats.
+     */
     class VLoader : public godot::RefCounted
     {
         GDCLASS(VLoader, godot::RefCounted)

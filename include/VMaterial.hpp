@@ -16,6 +16,9 @@ namespace VCoreGDExt
 {
     using StaticRID = TStaticType<godot::RID>;
 
+    /**
+     * @brief Represents a voxel material. This class can be use like a StandardMaterial3D, however if you plan to use this library only at development time you need to convert this material into an actual StandardMaterial3D.
+     */
     class VMaterial : public godot::Material
     {
         GDCLASS(VMaterial, godot::Material)
