@@ -23,6 +23,12 @@ namespace VCoreGDExt
 
             /**
              * @brief Sets the mesher type. Each mesher type produces a more or less optimized vertex mesh.
+             * Following types are possible:
+             *      - SIMPLE (Lots of faces)
+             *      - GREEDY (Less faces)
+             *      - MARCHING_CUBES (Lots of faces, but smoother)
+             *      - GREEDY_CHUNKED (Less faces but more than just greedy)
+             *      - GREEDY_TEXTURED (Less faces, if you have a lot of texture)
              */
             void SetMesherType(int _Type)
             {
@@ -38,9 +44,9 @@ namespace VCoreGDExt
             /**
              * @brief Generates a whole scene.
              * 
-             * @param mergeChildren: Merges all meshes into one.
+             * @param _MergeChildren: Merges all meshes into one.
              * 
-             * @return Returns a list of dictionaries, in the format {"transform": Transform3D, "mesh": ArrayMesh}
+             * @return Returns a list of dictionaries, in the format {"name": String, "transform": Transform3D, "mesh": ArrayMesh, "frameTime": Time how long this frame should last in ms. 0 means no animation}
             */
             godot::Array GenerateScene(const godot::Ref<VSceneNode> _SceneTree, bool _MergeChildren);
 
@@ -69,6 +75,8 @@ namespace VCoreGDExt
              * 
              * @param _Model: Voxel model to meshify.
              * @param _OnlyDirtyChunks: Meshes only dirty chunks.
+             * 
+             * @return Returns a list of dictionaries, in the format {"mesh": ArrayMesh, "uniqueId": int}
              */
             godot::Array GenerateChunks(godot::Ref<VModel> _Model, bool _OnlyDirtyChunks);
 

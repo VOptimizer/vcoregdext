@@ -19,11 +19,12 @@ namespace VCoreGDExt
     {
         GDCLASS(VModel, godot::RefCounted)
         public:
-            VModel() : m_Model(new VCore::CVoxelModel()) {}
-            VModel(const VCore::VoxelModel &_Model) : m_Model(_Model) 
+            VModel() : m_Model(new VCore::CVoxelModel()) 
             {
                 m_Model->Materials.push_back(std::make_shared<VCore::CMaterial>());
             }
+
+            VModel(const VCore::VoxelModel &_Model) : m_Model(_Model) { }
 
             godot::String GetName() const
             {
@@ -45,12 +46,28 @@ namespace VCoreGDExt
 
             /**
              * @brief Must be called for each new material to be used in the model.
+             * The default material has the index 0.
              */
             int AddMaterial(const godot::Ref<VMaterial> &_Material);
+
+            /**
+             * @return Gets the reference to a voxel material by its index.
+             */
             godot::Ref<VMaterial> GetMaterial(int _Index);
 
+            /**
+             * @return Gets a voxel a a given position. An empty dictionary means air, otherwise the format is as follows {"color": Color, "material": VMaterial, "transparent": bool}
+            */
             godot::Dictionary GetVoxel(const godot::Vector3i &_Pos);
+
+            /**
+             * @brief Sets a voxel at a given position. If _MaterialIdx is invalid, the material will be fallback to the default one.
+             */
             void SetVoxel(const godot::Vector3i &_Pos, int _MaterialIdx, const godot::Color &_Color);
+
+            /**
+             * @brief Removes a voxel on a given position.
+            */
             void RemoveVoxel(const godot::Vector3i &_Pos);
 
             /**

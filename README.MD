@@ -49,6 +49,10 @@ cmake --build .
 3. Just drink some coffee or touch grass, it will take a while at first.
 4. Copy the library into your project and create the `.gdextension` file as described above.
 
+## Documentation
+
+For examples and an documentation, please visit the [docs](docs/) directory.
+
 ## License
 
 This library is under the [MIT License](LICENSE.txt)

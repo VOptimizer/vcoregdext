@@ -23,7 +23,7 @@ namespace VCoreGDExt
     godot::Array VMesher::GenerateScene(const godot::Ref<VSceneNode> _SceneTree, bool _MergeChildren)
     {
         godot::Array result;
-        auto meshes = m_Mesher->GenerateScene(_SceneTree->GetSceneNode());
+        auto meshes = m_Mesher->GenerateScene(_SceneTree->GetSceneNode(), _MergeChildren);
         for (auto &&mesh : meshes)
         {
             godot::Dictionary entry;
@@ -56,7 +56,13 @@ namespace VCoreGDExt
 
         auto meshes = m_Mesher->GenerateChunks(_Model->GetModel(), _OnlyDirtyChunks);
         for (auto &&mesh : meshes)
-            result.push_back(CreateMesh(mesh.MeshData));
+        {
+            godot::Dictionary chunk;
+            chunk["mesh"] = CreateMesh(mesh.MeshData);
+            chunk["uniqueId"] = (uint64_t)mesh.UniqueId;
+
+            result.push_back(chunk);
+        }
 
         return result;
     }
@@ -83,7 +89,7 @@ namespace VCoreGDExt
             // Copies all indices to the godot array.
             godot::PackedInt32Array indices;
             indices.resize(surface.Indices.size());
-            memcpy(indices.ptrw(), surface.Indices.data(), indices.size() * sizeof(int));  
+            memcpy(indices.ptrw(), surface.Indices.data(), indices.size() * sizeof(int));
 
             // Since VCore is compiled using the VConfig.hpp for godot, we can simply copy over
             // the generated mesh data.

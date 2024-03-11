@@ -39,6 +39,8 @@ namespace VCoreGDExt
     {
         godot::Dictionary ret;
         auto voxel = m_Model->GetVoxel(Convert::ToVVec3(_Pos));
+        if(!voxel)
+            return ret;
 
         // Check if a diffuse texture existing.
         auto it = m_Model->Textures.find(VCore::TextureType::DIFFIUSE);
@@ -59,7 +61,27 @@ namespace VCoreGDExt
         if(_MaterialIdx > m_Model->Materials.size() || _MaterialIdx < 0)
             _MaterialIdx = 0;
 
-        m_Model->SetVoxel(Convert::ToVVec3(_Pos), _MaterialIdx, _Color.to_rgba32(), m_Model->Materials[_MaterialIdx]->Transparency != 0);
+        int cidx = 0;
+        auto it = m_Model->Textures.find(VCore::TextureType::DIFFIUSE);
+        if(it != m_Model->Textures.end())
+        {
+            auto &pixels = it->second->GetPixels();
+            auto cit = std::find(pixels.begin(), pixels.end(), _Color.to_abgr32());
+            if(cit != pixels.end())
+                cidx = (int)(cit - pixels.begin());
+            else
+            {
+                it->second->AddPixel(_Color.to_abgr32());
+                cidx = it->second->GetSize().x - 1;
+            }
+        }
+        else
+        {
+            m_Model->Textures[VCore::TextureType::DIFFIUSE] = std::make_shared<VCore::CTexture>();
+            m_Model->Textures[VCore::TextureType::DIFFIUSE]->AddPixel(_Color.to_abgr32());
+        }
+
+        m_Model->SetVoxel(Convert::ToVVec3(_Pos), _MaterialIdx, cidx, m_Model->Materials[_MaterialIdx]->Transparency != 0);
     }
 
     void VModel::RemoveVoxel(const godot::Vector3i &_Pos)

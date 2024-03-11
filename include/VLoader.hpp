@@ -19,12 +19,13 @@ namespace VCoreGDExt
             /**
              * @brief Loads a given file.
              * 
-             * @return Returns either OK on success or an error code otherwise.
+             * @return Returns either OK on success or Error::ERR_CANT_OPEN on error.
              */
             godot::Error Load(const godot::String &_Path);
 
             /**
-             * @return Returns the scenetree of the file. 
+             * @return Returns the scenetree of the file.
+             * A scenetree represents the structure of the scene. In short on which position is which model.
              */
             godot::Ref<VSceneNode> GetSceneTree() const
             {

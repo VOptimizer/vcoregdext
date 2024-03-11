@@ -81,6 +81,7 @@ namespace VCoreGDExt
             void vertex() 
             {
                 UV = UV * vec2(1, -1) + vec2(0, 1);
+                NORMAL *= -1.0;
             }
 
             void fragment() 
