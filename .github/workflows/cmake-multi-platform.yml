@@ -3,6 +3,7 @@
 name: Build of vcoregdext
 
 on:
+  workflow_dispatch:
   push:
     # branches: [ "main" ]
     tags:
