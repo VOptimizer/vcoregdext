@@ -1,6 +1,8 @@
 #include <VMesher.hpp>
 #include <godot_cpp/classes/ref.hpp>
 
+#include "GodotFileStream.hpp"
+
 namespace VCoreGDExt
 {
     void VMesher::_bind_methods()
@@ -38,6 +40,7 @@ namespace VCoreGDExt
             );
             result.push_back(entry);
         }
+
         return result;
     }
 
@@ -53,7 +56,6 @@ namespace VCoreGDExt
     godot::Array VMesher::GenerateChunks(godot::Ref<VModel> _Model, bool _OnlyDirtyChunks)
     {
         godot::Array result;
-
         auto meshes = m_Mesher->GenerateChunks(_Model->GetModel(), _OnlyDirtyChunks);
         for (auto &&mesh : meshes)
         {

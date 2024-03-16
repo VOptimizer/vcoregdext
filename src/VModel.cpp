@@ -47,7 +47,10 @@ namespace VCoreGDExt
         if(it != m_Model->Textures.end())
         {
             if(voxel->Color < it->second->GetSize().x)
-                ret["color"] = godot::Color::hex(it->second->GetPixel(VCore::Math::Vec2ui(voxel->Color, 0)));
+            {
+                auto color = VCore::CColor(it->second->GetPixel(VCore::Math::Vec2ui(voxel->Color, 0)));
+                ret["color"] = godot::Color(color.R / 255.f, color.G / 255.f, color.B / 255.f, color.A / 255.f);
+            }
         }
 
         ret["material"] = GetMaterial(voxel->Material);
