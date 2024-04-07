@@ -61,6 +61,11 @@ namespace VCoreGDExt
             godot::Dictionary GetVoxel(const godot::Vector3i &_Pos);
 
             /**
+             * @return Returns true, if at _Pos a voxel exists.
+             */
+            bool HasVoxel(const godot::Vector3i &_Pos);
+
+            /**
              * @brief Sets a voxel at a given position. If _MaterialIdx is invalid, the material will be fallback to the default one.
              */
             void SetVoxel(const godot::Vector3i &_Pos, int _MaterialIdx, const godot::Color &_Color);
@@ -91,7 +96,7 @@ namespace VCoreGDExt
                 return m_Model;
             }
 
-            ~VModel() {}
+            ~VModel() = default;
 
         protected:
             VCore::VoxelModel m_Model;

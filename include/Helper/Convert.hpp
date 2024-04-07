@@ -17,6 +17,11 @@ namespace VCoreGDExt
         {
             return VCore::Math::Vec3f(_V.x, _V.y, _V.z);
         }
+
+        inline VCore::Math::Vec2ui ToVVec2ui(const godot::Vector2i &_V)
+        {
+            return VCore::Math::Vec2ui(_V.x, _V.y);
+        }
     } // namespace Convert
 } // namespace VCoreGDExt
 

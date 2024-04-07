@@ -50,6 +50,11 @@ namespace VCoreGDExt
                 return this->m_Value.Ptr != nullptr;
             }
 
+            void Clear()
+            {
+                Delete();
+            }
+
             ~TStaticType()
             {
                 Delete();
@@ -61,6 +66,7 @@ namespace VCoreGDExt
                 {
                     m_Value.Type->~T();
                     delete (char*)m_Value.Ptr;
+                    m_Value.Ptr = nullptr;
                 }
             }
 

@@ -141,10 +141,16 @@ namespace VCoreGDExt
 	        bool _can_use_render_priority() const override { return true; }
             godot::Shader::Mode _get_shader_mode() const override { return godot::Shader::Mode::MODE_SPATIAL; }
 
-            ~VMaterial() {}
+            ~VMaterial()
+            {
+                MaterialCount--;
+                if(MaterialCount == 0)
+                    DeinitShaderCode();
+            }
 
         protected:
             static StaticRID Shader;
+            static uint64_t MaterialCount;
 
             VCore::Material m_Material;
             godot::Ref<godot::Texture> m_Albedo;
@@ -153,6 +159,7 @@ namespace VCoreGDExt
 	        static void _bind_methods();
 
             static void InitShaderCode();
+            static void DeinitShaderCode();
             void InitShaderParameters();
     };
 } // namespace VCoreGDExt

@@ -3,6 +3,7 @@
 namespace VCoreGDExt
 {
     StaticRID VMaterial::Shader;
+    uint64_t VMaterial::MaterialCount = 0;
 
     void VMaterial::_bind_methods()
     {
@@ -61,6 +62,13 @@ namespace VCoreGDExt
 
         godot::RenderingServer::get_singleton()->material_set_shader(godot::Material::get_rid(), Shader);
         InitShaderParameters(); 
+        MaterialCount++;
+    }
+
+    void VMaterial::DeinitShaderCode()
+    {
+        godot::RenderingServer::get_singleton()->free_rid(Shader);
+        Shader.Clear();
     }
 
     void VMaterial::InitShaderCode()

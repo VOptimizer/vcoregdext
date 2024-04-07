@@ -80,7 +80,7 @@ namespace VCoreGDExt
              */
             godot::Array GenerateChunks(godot::Ref<VModel> _Model, bool _OnlyDirtyChunks);
 
-            ~VMesher() {}
+            ~VMesher() = default;
 
         protected:
             VCore::Mesher m_Mesher;

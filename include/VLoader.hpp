@@ -14,7 +14,7 @@ namespace VCoreGDExt
     {
         GDCLASS(VLoader, godot::RefCounted)
         public:
-            VLoader() {}
+            VLoader() = default;
 
             /**
              * @brief Loads a given file.
@@ -40,7 +40,7 @@ namespace VCoreGDExt
              */
             godot::Array GetModels() const;
 
-            ~VLoader() {}
+            ~VLoader() = default;
 
         protected:
             VCore::VoxelFormat m_Loader;

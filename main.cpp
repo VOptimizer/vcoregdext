@@ -2,6 +2,7 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include <VExporter.hpp>
 #include <VMaterial.hpp>
 #include <VModel.hpp>
 #include <VMesher.hpp>
@@ -16,6 +17,7 @@ void InitializeVCoreGDExtension(ModuleInitializationLevel _Level)
         return;
 
     // Register VCore Bindings
+    ClassDB::register_class<VCoreGDExt::VExporter>();
     ClassDB::register_class<VCoreGDExt::VModel>();
     ClassDB::register_class<VCoreGDExt::VMaterial>();
     ClassDB::register_class<VCoreGDExt::VSceneNode>();

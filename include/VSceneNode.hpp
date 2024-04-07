@@ -106,7 +106,7 @@ namespace VCoreGDExt
                 return m_Node;
             }
 
-            ~VSceneNode() {}
+            ~VSceneNode() = default;
         protected:
             VCore::SceneNode m_Node;
 	        static void _bind_methods()

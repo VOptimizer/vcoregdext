@@ -11,6 +11,7 @@ namespace VCoreGDExt
         godot::ClassDB::bind_method(godot::D_METHOD("get_bbox"), &VModel::GetBBox);
         godot::ClassDB::bind_method(godot::D_METHOD("clear"), &VModel::Clear);
 
+        godot::ClassDB::bind_method(godot::D_METHOD("has_voxel"), &VModel::HasVoxel);
         godot::ClassDB::bind_method(godot::D_METHOD("get_voxel"), &VModel::GetVoxel);
         godot::ClassDB::bind_method(godot::D_METHOD("set_voxel"), &VModel::SetVoxel);
         godot::ClassDB::bind_method(godot::D_METHOD("remove_voxel"), &VModel::RemoveVoxel);
@@ -57,6 +58,12 @@ namespace VCoreGDExt
         ret["transparent"] = voxel->Transparent;
 
         return ret;
+    }
+
+    bool VModel::HasVoxel(const godot::Vector3i &_Pos)
+    {
+        auto voxel = m_Model->GetVoxel(Convert::ToVVec3(_Pos));
+        return voxel != nullptr;
     }
 
     void VModel::SetVoxel(const godot::Vector3i &_Pos, int _MaterialIdx, const godot::Color &_Color)
