@@ -76,7 +76,10 @@ namespace VCoreGDExt
 
             godot::Ref<VModel> GetModel()
             {
-                return memnew(VModel(m_Node->Mesh));
+                if(m_Node->Mesh)
+                    return memnew(VModel(m_Node->Mesh));
+
+                return nullptr;
             }
 
             uint64_t GetChildrenCount() const 
