@@ -22,10 +22,15 @@
  * SOFTWARE.
  */
 
+#include "GodotSurface.hpp"
+#include "VModel.hpp"
+#include "godot_cpp/classes/node3d.hpp"
+#include "godot_cpp/classes/object.hpp"
 #include <VMaterial.hpp>
 #include <VExporter.hpp>
 #include <Helper/Convert.hpp>
 #include <godot_cpp/classes/material.hpp>
+#include <memory>
 
 namespace VCoreGDExt
 {
@@ -35,57 +40,30 @@ namespace VCoreGDExt
         godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "OBJ", (int)VCore::ExporterType::OBJ);
         godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "GLTF", (int)VCore::ExporterType::GLTF);
         godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "GLB", (int)VCore::ExporterType::GLB);
-        godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "ESCN", (int)VCore::ExporterType::ESCN);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "ESCN2", (int)VCore::ExporterType::ESCN2);
+        godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "ESCN3", (int)VCore::ExporterType::ESCN3);
         godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "PLY", (int)VCore::ExporterType::PLY);
         godot::ClassDB::bind_integer_constant(get_class_static(), "ExporterTypes", "FBX", (int)VCore::ExporterType::FBX);
 
-        godot::ClassDB::bind_method(godot::D_METHOD("save_mesh"), &VExporter::SaveMesh);
-        godot::ClassDB::bind_method(godot::D_METHOD("save_meshes"), &VExporter::SaveMeshes);
+        godot::ClassDB::bind_method(godot::D_METHOD("save_scene"), &VExporter::SaveScene);
         godot::ClassDB::bind_method(godot::D_METHOD("get_type"), &VExporter::GetType);
     }
 
-    VCore::Texture VExporter::ConvertGodotToTexture(const godot::Ref<godot::ImageTexture> &_Texture)
-    {
-        auto img = _Texture->get_image();
-        if(img->get_format() != godot::Image::FORMAT_RGBA8)
-            return nullptr;
-
-        return std::make_shared<VCore::CTexture>(Convert::ToVVec2ui(img->get_size()), (uint32_t*)img->get_data().ptr());
-    }
-
-    VCore::Mesh VExporter::ConverToVMesh(const godot::Ref<godot::ArrayMesh> &_Mesh)
+    VCore::Mesh VExporter::ConverToVMesh(const godot::Ref<godot::ArrayMesh> &p_Mesh)
     {
         auto mesh = std::make_shared<VCore::SMesh>();
-        for (size_t i = 0; i < _Mesh->get_surface_count(); i++)
+        for (size_t i = 0; i < p_Mesh->get_surface_count(); i++)
         {
-            auto material = godot::Object::cast_to<VMaterial>(*_Mesh->surface_get_material(i));
-            if(material)
-            {
-                if(mesh->Textures.empty())
-                {
-                    auto texture = material->GetAlbedoTexture();
-                    if(texture.is_valid())
-                        mesh->Textures[VCore::TextureType::DIFFIUSE] = ConvertGodotToTexture(texture);
+            auto material = godot::Object::cast_to<VMaterial>(*p_Mesh->surface_get_material(i));
 
-                    texture = material->GetEmissionTexture();
-                    if(texture.is_valid())
-                        mesh->Textures[VCore::TextureType::EMISSION] = ConvertGodotToTexture(texture);
-                }
-            }
-            else
-                return nullptr;
+            auto data = p_Mesh->surface_get_arrays(i);
 
-            VCore::SSurface surface;
-            surface.FaceMaterial = material->GetMaterial();
-
-            auto data = _Mesh->surface_get_arrays(i);
-            surface.Vertices = data[godot::ArrayMesh::ARRAY_VERTEX];
-            surface.Normals = data[godot::ArrayMesh::ARRAY_NORMAL];
-            surface.UVs = data[godot::ArrayMesh::ARRAY_TEX_UV];
-            godot::PackedInt32Array indices = data[godot::ArrayMesh::ARRAY_INDEX];
-
-            surface.Indices.resize(indices.size());
-            memcpy(&surface.Indices[0], indices.ptr(), indices.size() * sizeof(int));
+            auto surface = new GodotSurface();
+            surface->MaterialHandle = material->GetMaterialIdx();
+            surface->Positions = data[godot::Mesh::ARRAY_VERTEX];
+            surface->Normals = data[godot::Mesh::ARRAY_NORMAL];
+            surface->Colors = data[godot::Mesh::ARRAY_COLOR];
+            surface->Indices = data[godot::Mesh::ARRAY_INDEX];
 
             mesh->Surfaces.push_back(std::move(surface));
         }
@@ -93,100 +71,15 @@ namespace VCoreGDExt
         return mesh;
     }
 
-    int VExporter::SaveMesh(const godot::String &_Path, const godot::Ref<godot::ArrayMesh> &_Mesh)
+    int VExporter::SaveScene(const godot::String &p_Path, const godot::Node3D *p_Scene)
     {
-        auto type = (VCore::ExporterType)GetType(_Path);
-        if(type != VCore::ExporterType::UNKNOWN)
-        {
-            auto mesh = ConverToVMesh(_Mesh);
-            if(!mesh)
-                return godot::Error::ERR_INVALID_DATA;
-
-            try
-            {
-                Save(_Path, mesh);
-                return godot::Error::OK;
-            }
-            catch(const std::exception& e)
-            {
-                ERR_PRINT(e.what());
-                return godot::Error::ERR_FILE_CANT_WRITE;
-            }
-        }
-
-        return godot::Error::ERR_FILE_UNRECOGNIZED;
-    }
-
-    int VExporter::SaveMeshes(const godot::String &_Path, const godot::Array &_Mesh)
-    {
-        std::vector<VCore::Mesh> meshes;
-        for (size_t i = 0; i < _Mesh.size(); i++)
-        {
-            auto v = _Mesh[i];
-            if(v.get_type() == godot::Variant::DICTIONARY)
-            {
-                auto dict = (godot::Dictionary)v;
-                if(dict.has("mesh"))
-                {
-                    v = dict["mesh"];
-                    if(v.get_type() == godot::Variant::OBJECT)
-                    {
-                        auto arrayMesh = godot::Object::cast_to<godot::ArrayMesh>(((godot::Object*)v));
-                        if(arrayMesh)
-                        {
-                            auto mesh = ConverToVMesh(arrayMesh);
-                            if(!mesh)
-                                return godot::Error::ERR_INVALID_DATA;
-
-                            if(dict.has("name") && dict["name"].get_type() == godot::Variant::STRING)
-                                mesh->Name = ((godot::String)dict["name"]).utf8().get_data();
-
-                            if(dict.has("frameTime") && dict["frameTime"].get_type() == godot::Variant::INT)
-                                mesh->FrameTime = (int)dict["frameTime"];
-
-                            if(dict.has("transform") && dict["transform"].get_type() == godot::Variant::TRANSFORM3D)
-                            {
-                                // Math is my passion :D
-                                auto transform = (godot::Transform3D)dict["transform"];
-                                mesh->ModelMatrix.x.x = transform.basis.rows[0][0];
-                                mesh->ModelMatrix.x.y = transform.basis.rows[1][0];
-                                mesh->ModelMatrix.x.z = transform.basis.rows[2][0];
-
-                                mesh->ModelMatrix.y.x = transform.basis.rows[0][1];
-                                mesh->ModelMatrix.y.y = transform.basis.rows[1][1];
-                                mesh->ModelMatrix.y.z = transform.basis.rows[2][1];
-
-                                mesh->ModelMatrix.z.x = transform.basis.rows[0][2];
-                                mesh->ModelMatrix.z.y = transform.basis.rows[1][2];
-                                mesh->ModelMatrix.z.z = transform.basis.rows[2][2];
-
-                                mesh->ModelMatrix.x.w = transform.origin.x;
-                                mesh->ModelMatrix.y.w = transform.origin.y;
-                                mesh->ModelMatrix.z.w = transform.origin.z;
-                            }
-
-                            meshes.push_back(mesh);
-                        }
-                    }
-                }
-            }
-            else if(v.get_type() == godot::Variant::OBJECT)
-            {
-                auto arrayMesh = godot::Object::cast_to<godot::ArrayMesh>(((godot::Object*)v));
-                if(arrayMesh)
-                {
-                    auto mesh = ConverToVMesh(arrayMesh);
-                    if(!mesh)
-                        return godot::Error::ERR_INVALID_DATA;
-
-                    meshes.push_back(mesh);
-                }
-            }
-        }
+        auto renderTree = std::make_shared<VCore::RenderSceneTree_t>();
+        CopyProperties(renderTree.get(), p_Scene);
+        CreateNodeTree(renderTree, renderTree.get(), p_Scene);
 
         try
         {
-            Save(_Path, meshes);
+            Save(p_Path, renderTree);
             return godot::Error::OK;
         }
         catch(const std::exception& e)
@@ -196,5 +89,35 @@ namespace VCoreGDExt
         }
 
         return godot::Error::ERR_FILE_UNRECOGNIZED;
+    }
+
+    void VExporter::CreateNodeTree(VCore::RenderSceneTree &p_Tree, VCore::CSceneNodeBase *p_Parent, const godot::Node *p_Node)
+    {
+        for (int i = 0; i < p_Node->get_child_count(); i++) 
+        {
+            auto n = p_Node->get_child(i);
+            auto c = godot::Object::cast_to<godot::Node3D>(n);
+            if(c)
+            {
+                VCore::CSceneNode *node = nullptr;
+
+                auto vmodel = godot::Object::cast_to<VModel>(c);
+                if(vmodel)
+                {
+                    p_Tree->AddModel(ConverToVMesh(vmodel->get_mesh()));
+                    node = new VCore::CSceneModelNode(p_Parent, p_Tree->GetModels().size() - 1);
+                }
+                else
+                    node = new VCore::CSceneNode(p_Parent);
+                
+                CopyProperties(node, c);
+                p_Tree->AddChild(node);
+                
+
+                CreateNodeTree(p_Tree, node, c);
+            }
+            else
+                CreateNodeTree(p_Tree, p_Parent, n);
+        }
     }
 } // namespace VCoreGDExt

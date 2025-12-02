@@ -5,3 +5,4 @@
 [submodule "third-party/vcore"]
 	path = third-party/vcore
 	url = https://github.com/VOptimizer/VCore.git
+	branch = performance

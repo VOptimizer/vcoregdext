@@ -1,6 +1,7 @@
 #ifndef VMaterial_HPP
 #define VMaterial_HPP
 
+#include <cstdint>
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
@@ -10,7 +11,10 @@
 #include <godot_cpp/classes/ref.hpp>
 #include <VCore/VCore.hpp>
 
-#include "Helper/StaticType.hpp"
+#include <Helper/StaticType.hpp>
+#include <godot_cpp/classes/shader.hpp>
+#include <godot_cpp/classes/shader_material.hpp>
+#include <godot_cpp/variant/rid.hpp>
 
 namespace VCoreGDExt
 {
@@ -19,12 +23,12 @@ namespace VCoreGDExt
     /**
      * @brief Represents a voxel material. This class can be use like a StandardMaterial3D, however if you plan to use this library only at development time you need to convert this material into an actual StandardMaterial3D.
      */
-    class VMaterial : public godot::Material
+    class VMaterial : public godot::ShaderMaterial
     {
         GDCLASS(VMaterial, godot::Material)
         public:
             VMaterial();
-            VMaterial(const VCore::Material &_Material);
+            VMaterial(const VCore::Material &p_Material, uint8_t p_MaterialIdx);
 
             godot::String GetName() const 
             {
@@ -44,7 +48,8 @@ namespace VCoreGDExt
             void SetMetallic(float _Metallic)
             {
                 m_Material->Metallic = _Metallic;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "metallic", _Metallic);
+                // godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "metallic", _Metallic);
+                set_shader_parameter("metallic", _Metallic);
             }
 
             float GetSpecular() const 
@@ -55,7 +60,8 @@ namespace VCoreGDExt
             void SetSpecular(float _Specular) 
             {
                 m_Material->Specular = _Specular;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "specular", _Specular);
+                // godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "specular", _Specular);
+                set_shader_parameter("specular", _Specular);
             }
 
             float GetRoughness() const 
@@ -66,7 +72,8 @@ namespace VCoreGDExt
             void SetRoughness(float _Roughness) 
             {
                 m_Material->Roughness = _Roughness;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "roughness", _Roughness);
+                // godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "roughness", _Roughness);
+                set_shader_parameter("roughness", _Roughness);
             }
 
             float GetIOR() const 
@@ -87,7 +94,8 @@ namespace VCoreGDExt
             void SetPower(float _Power) 
             {
                 m_Material->Power = _Power;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "emission_energy", _Power);
+                // godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "emission_energy", _Power);
+                set_shader_parameter("emission_energy", _Power);
             }
 
             float GetTransparency() const 
@@ -98,35 +106,22 @@ namespace VCoreGDExt
             void SetTransparency(float _Transparency) 
             {
                 m_Material->Transparency = _Transparency;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "alpha", 1.0 - _Transparency);
+                // godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "alpha", 1.0 - _Transparency);
+                set_shader_parameter("alpha", 1.0 - _Transparency);
             }
 
-            void SetAlbedoTexture(const godot::Ref<godot::Texture> &_Texture)
+            void SetMaterialIdx(uint8_t p_MaterialIdx) 
             {
-                m_Albedo = _Texture;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "texture_albedo", m_Albedo->get_rid());
+                m_MaterialIdx = p_MaterialIdx; 
+                m_Material = VCore::MaterialManager::GetMaterial(m_MaterialIdx);
+                InitShaderParameters();
             }
-
-            godot::Ref<godot::Texture> GetAlbedoTexture() const
-            {
-                return m_Albedo;
-            }
-
-            void SetEmissionTexture(const godot::Ref<godot::Texture> &_Texture)
-            {
-                m_Emission = _Texture;
-                godot::RenderingServer::get_singleton()->material_set_param(godot::Material::get_rid(), "texture_emission", m_Emission->get_rid());
-            }
-
-            godot::Ref<godot::Texture> GetEmissionTexture() const
-            {
-                return m_Emission;
-            }
+            uint8_t GetMaterialIdx() const { return m_MaterialIdx; }
 
             /**
              * @return Converts this material to a standard godot material. This is only needed if don't want to deploy this library with your project, and just want to import assets at development time.
             */
-            godot::Ref<godot::StandardMaterial3D> ToStandardMaterial3D() const;
+            // godot::Ref<godot::StandardMaterial3D> ToStandardMaterial3D() const;
 
             /**
              * @brief For internal use only!
@@ -136,10 +131,13 @@ namespace VCoreGDExt
                 return m_Material;
             }
 
-            godot::RID _get_shader_rid() const override { return Shader; }
-            bool _can_do_next_pass() const override { return true; }
-	        bool _can_use_render_priority() const override { return true; }
-            godot::Shader::Mode _get_shader_mode() const override { return godot::Shader::Mode::MODE_SPATIAL; }
+            // godot::RID get_rid() const { godot::print_line(m_MaterialRid.is_valid()); return m_MaterialRid; }
+            // godot::RID _get_shader_rid() const override { return Shader; }
+            // bool _can_do_next_pass() const override { return false; }
+	        // bool _can_use_render_priority() const override { return false; }
+            // godot::Shader::Mode _get_shader_mode() const override { return godot::Shader::Mode::MODE_SPATIAL; }
+
+            void _set_shader(const godot::Ref<godot::Shader> &p_shader) {}
 
             ~VMaterial()
             {
@@ -148,18 +146,21 @@ namespace VCoreGDExt
                     DeinitShaderCode();
             }
 
+            static void DeinitShaderCode();
         protected:
+            static godot::Ref<godot::Shader> ShaderResource;
             static StaticRID Shader;
             static uint64_t MaterialCount;
 
+            // godot::RID m_MaterialRid;
             VCore::Material m_Material;
-            godot::Ref<godot::Texture> m_Albedo;
-            godot::Ref<godot::Texture> m_Emission;
+            uint8_t m_MaterialIdx{};
 
 	        static void _bind_methods();
+            void _get_property_list(godot::List<godot::PropertyInfo> *p_list) const { p_list->clear(); }
+            void _validate_property(godot::PropertyInfo &p_property) const;
 
             static void InitShaderCode();
-            static void DeinitShaderCode();
             void InitShaderParameters();
     };
 } // namespace VCoreGDExt

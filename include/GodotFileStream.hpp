@@ -1,6 +1,7 @@
 #ifndef GODOTFILESTREAM_HPP
 #define GODOTFILESTREAM_HPP
 
+#include <godot_cpp/classes/dir_access.hpp>
 #include <VCore/VCore.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 #include <godot_cpp/classes/ref.hpp>
@@ -26,6 +27,11 @@ class CGodotIOHandler : public VCore::IIOHandler
         VCore::IFileStream *Open(const std::string &_File, const char *_OpenMode)
         {
             return new CGodotFileStream(_File, _OpenMode);
+        }
+
+        void Delete(const std::string &p_File)
+        {
+            godot::DirAccess::remove_absolute(p_File.c_str());
         }
 
         void Close(VCore::IFileStream *_Stream)

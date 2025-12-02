@@ -14,11 +14,12 @@ CGodotFileStream::CGodotFileStream(const std::string &_File, const char *_OpenMo
     }
     
     m_File = godot::FileAccess::open(_File.c_str(), (godot::FileAccess::ModeFlags)openFlag);
+    m_FilePath = _File;
 }
 
 size_t CGodotFileStream::Read(char *_Buffer, size_t _Size)
 {
-    if(m_File.is_null() || (Tell() + (_Size) > Size()))
+    if(m_File.is_null())
         return 0;
 
     godot::PackedByteArray buffer = m_File->get_buffer(_Size);

@@ -30,6 +30,8 @@
 #include <godot_cpp/classes/image_texture.hpp>
 #include <VCore/VCore.hpp>
 #include "GodotFileStream.hpp"
+#include "Helper/Convert.hpp"
+#include "godot_cpp/classes/node3d.hpp"
 
 namespace VCoreGDExt
 {
@@ -48,14 +50,9 @@ namespace VCoreGDExt
             }
 
             /**
-             * @brief Saves a mesh to file.
-             */
-            int SaveMesh(const godot::String &_Path, const godot::Ref<godot::ArrayMesh> &_Mesh);
-
-            /**
              * @brief Saves an array of meshes to file.
              */
-            int SaveMeshes(const godot::String &_Path, const godot::Array &_Mesh);
+            int SaveScene(const godot::String &p_Path, const godot::Node3D *p_Scene);
 
             template<class T>
             inline void Save(const godot::String &_Path, const T &_MeshData)
@@ -67,9 +64,20 @@ namespace VCoreGDExt
             ~VExporter() = default;
 
         protected:
-            VCore::Texture ConvertGodotToTexture(const godot::Ref<godot::ImageTexture> &_Texture);
-            VCore::Mesh ConverToVMesh(const godot::Ref<godot::ArrayMesh> &_Mesh);
+            VCore::Mesh ConverToVMesh(const godot::Ref<godot::ArrayMesh> &p_Mesh);
 	        static void _bind_methods();
+
+        private:
+            void CopyProperties(VCore::CSceneNodeBase *p_VNode, const godot::Node3D *p_Node)
+            {
+                p_VNode->Name = p_Node->get_name().to_utf8_buffer().get_string_from_utf8().utf8().get_data();
+                p_VNode->Visible = p_Node->is_visible();
+                p_VNode->SetPosition(Convert::ToVVec3i(p_Node->get_position()));
+                p_VNode->SetScale(Convert::ToVVec3(p_Node->get_scale()));
+                p_VNode->SetRotation(Convert::ToVVec3(p_Node->get_rotation()));
+            }
+
+            void CreateNodeTree(VCore::RenderSceneTree &p_Tree, VCore::CSceneNodeBase *p_Parent, const godot::Node *p_Node);
     };
 } // namespace VCoreGDExt
 

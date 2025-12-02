@@ -2,3 +2,5 @@ build*
 GDDebugBuild
 .vscode*
 */xml/*
+.cache
+install

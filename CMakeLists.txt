@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 3.3.0)
+cmake_minimum_required(VERSION 3.15.0)
 project(vcoregdext VERSION 0.1.0 LANGUAGES CXX C)
+
+set(GODOTCPP_TARGET "template_release")
+set(GODOTCPP_DISABLE_EXCEPTIONS OFF)
 
 if(Emscripten)
     set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
@@ -58,9 +61,10 @@ add_subdirectory(third-party/vcore/lib)
 add_dependencies(VCore godot-cpp)
 
 set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
-         "${PROJECT_SOURCE_DIR}/src/VMesher.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VPackedScene.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMaterial.cpp"
          "${PROJECT_SOURCE_DIR}/src/VLoader.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VoxelStorage.cpp"
          "${PROJECT_SOURCE_DIR}/src/VExporter.cpp"
          "${PROJECT_SOURCE_DIR}/src/GodotFileStream.cpp")
 
