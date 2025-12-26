@@ -1,6 +1,7 @@
 #ifndef VMaterial_HPP
 #define VMaterial_HPP
 
+#include "VCore/Meshing/Material.hpp"
 #include <cstdint>
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/material.hpp>
@@ -114,14 +115,15 @@ namespace VCoreGDExt
             {
                 m_MaterialIdx = p_MaterialIdx; 
                 m_Material = VCore::MaterialManager::GetMaterial(m_MaterialIdx);
+                if(!m_Material)
+                {
+                    m_MaterialIdx = VCore::MaterialManager::AddMaterial(VCore::CMaterial());
+                    m_Material = VCore::MaterialManager::GetMaterial(m_MaterialIdx);
+                }
+
                 InitShaderParameters();
             }
             uint8_t GetMaterialIdx() const { return m_MaterialIdx; }
-
-            /**
-             * @return Converts this material to a standard godot material. This is only needed if don't want to deploy this library with your project, and just want to import assets at development time.
-            */
-            // godot::Ref<godot::StandardMaterial3D> ToStandardMaterial3D() const;
 
             /**
              * @brief For internal use only!
@@ -157,6 +159,7 @@ namespace VCoreGDExt
             uint8_t m_MaterialIdx{};
 
 	        static void _bind_methods();
+
             void _get_property_list(godot::List<godot::PropertyInfo> *p_list) const { p_list->clear(); }
             void _validate_property(godot::PropertyInfo &p_property) const;
 

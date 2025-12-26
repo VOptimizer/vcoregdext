@@ -1,5 +1,8 @@
-#include "godot_cpp/classes/object.hpp"
-#include "godot_cpp/classes/ref.hpp"
+#include "godot_cpp/core/error_macros.hpp"
+#include "godot_cpp/variant/string.hpp"
+#include <GodotFileStream.hpp>
+#include <chrono>
+#include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/core/memory.hpp>
 #include <VoxelStorage.hpp>
 
@@ -12,12 +15,31 @@ namespace VCoreGDExt
         m_Storage[p_File] = memnew(CVoxelTreeStorage(p_File, p_Tree));
     }
 
-    CVoxelTreeStorage *CVoxelStorage::GetVoxelTree(godot::String p_File) const
+    CVoxelTreeStorage *CVoxelStorage::GetVoxelTree(godot::String p_File)
     {
         if(m_Storage.has(p_File))
             return dynamic_cast<CVoxelTreeStorage*>((godot::Object*)m_Storage[p_File]);
 
-        return nullptr;
+        try
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+
+            auto loader = VCore::IVoxelFormat::CreateAndOpen<CGodotIOHandler>(p_File.utf8().get_data(), VCore::FileMode::READ);
+            loader->Load();
+
+            auto end = std::chrono::high_resolution_clock::now();
+            auto loaderduration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+            ERR_PRINT(godot::String::num_real(loaderduration.count() / 1000000.0));
+
+            AddVoxelFile(p_File, loader->SceneTree);
+        }
+        catch(const std::exception& e)
+        {
+            ERR_PRINT(e.what());
+            return nullptr;
+        }
+
+        return dynamic_cast<CVoxelTreeStorage*>((godot::Object*)m_Storage[p_File]);
     }
 
     void CVoxelStorage::AddRef(const godot::String &p_File)

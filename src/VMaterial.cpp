@@ -11,7 +11,10 @@ namespace VCoreGDExt
 
     void VMaterial::_bind_methods()
     {
-        // godot::ClassDB::bind_method(godot::D_METHOD("to_standard_material_3d"), &VMaterial::ToStandardMaterial3D);
+        // ALWAYS BIND FIRST. SO THAT GODOT CALLS THIS INITIALLY, IF SOMETHING LOADS FROM DISK.
+        godot::ClassDB::bind_method(godot::D_METHOD("_get_material_idx"), &VMaterial::GetMaterialIdx);
+        godot::ClassDB::bind_method(godot::D_METHOD("_set_material_idx"), &VMaterial::SetMaterialIdx);
+        godot::ClassDB::add_property(get_class_static(), godot::PropertyInfo(godot::Variant::INT, "_material_idx", godot::PROPERTY_HINT_NONE, "", godot::PROPERTY_USAGE_STORAGE | godot::PROPERTY_USAGE_INTERNAL), "_set_material_idx", "_get_material_idx");
 
         godot::ClassDB::bind_method(godot::D_METHOD("get_name"), &VMaterial::GetName);
         godot::ClassDB::bind_method(godot::D_METHOD("set_name"), &VMaterial::SetName);
@@ -42,10 +45,6 @@ namespace VCoreGDExt
         godot::ClassDB::add_property(get_class_static(), godot::PropertyInfo(godot::Variant::FLOAT, "transparency"), "set_transparency", "get_transparency");
 
         godot::ClassDB::bind_method(godot::D_METHOD("set_shader"), &VMaterial::_set_shader);
-
-        godot::ClassDB::bind_method(godot::D_METHOD("_get_material_idx"), &VMaterial::GetMaterialIdx);
-        godot::ClassDB::bind_method(godot::D_METHOD("_set_material_idx"), &VMaterial::SetMaterialIdx);
-        godot::ClassDB::add_property(get_class_static(), godot::PropertyInfo(godot::Variant::INT, "_material_idx", godot::PROPERTY_HINT_NONE, "", godot::PROPERTY_USAGE_INTERNAL), "_set_material_idx", "_get_material_idx");
     }
 
     VMaterial::VMaterial()

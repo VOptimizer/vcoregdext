@@ -18,7 +18,7 @@ namespace VCoreGDExt
         public:
             const godot::String File;
             const VCore::VoxelSceneTree Tree;
-            uint64_t References{};
+            uint64_t References{1};
 
             CVoxelTreeStorage() = default;
             CVoxelTreeStorage(const godot::String &p_File, const VCore::VoxelSceneTree &p_Tree) : File(p_File), Tree(p_Tree) {}
@@ -49,7 +49,7 @@ namespace VCoreGDExt
             void AddVoxelFile(godot::String p_File, VCore::VoxelSceneTree p_Tree);
 
             /** @return Gets a voxel tree or null. */
-            CVoxelTreeStorage *GetVoxelTree(godot::String p_File) const;
+            CVoxelTreeStorage *GetVoxelTree(godot::String p_File);
 
             /** Adds a reference to a voxel file */
             void AddRef(const godot::String &p_File);

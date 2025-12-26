@@ -26,7 +26,7 @@
 #define GODOTSURFACE_HPP
 
 #include "Helper/Convert.hpp"
-#include "godot_cpp/variant/packed_color_array.hpp"
+#include <godot_cpp/variant/packed_color_array.hpp>
 #include <VCore/VCore.hpp>
 #include <cstdint>
 #include <godot_cpp/variant/variant.hpp>
@@ -36,6 +36,9 @@ namespace VCoreGDExt
     class GodotSurface : public VCore::ISurface
     {
         public:
+            GodotSurface() : VCore::ISurface() {}
+            GodotSurface(double p_ModelScale) : GodotSurface() { m_ModelScale = p_ModelScale; }
+
             godot::PackedVector3Array Positions;
             godot::PackedVector3Array Normals;
             godot::PackedColorArray Colors;
@@ -43,9 +46,9 @@ namespace VCoreGDExt
 
             uint32_t AddVertex(const VCore::SVertex *p_Vertex) override
             {
-                Positions.push_back(Convert::ToGDVec3(p_Vertex->Pos));
+                Positions.push_back(Convert::ToGDVec3(p_Vertex->Pos * m_ModelScale));
                 Normals.push_back(Convert::ToGDVec3(p_Vertex->Normal));
-                Colors.push_back(Convert::ToGDColor(VCore::CColor(p_Vertex->Color)));
+                Colors.push_back(Convert::ToGDColor(VCore::CColor::CreateFromRGBA(p_Vertex->Color)));
                 
                 delete p_Vertex;
                 return Positions.size() - 1;
@@ -74,7 +77,7 @@ namespace VCoreGDExt
                 {
                     Positions[p_Idx] = Convert::ToGDVec3(p_Vertex.Pos);
                     Normals[p_Idx] = Convert::ToGDVec3(p_Vertex.Normal);
-                    Colors[p_Idx] = Convert::ToGDColor(VCore::CColor(p_Vertex.Color));
+                    Colors[p_Idx] = Convert::ToGDColor(VCore::CColor::CreateFromRGBA(p_Vertex.Color));
                 }
             }
 
@@ -83,7 +86,7 @@ namespace VCoreGDExt
                 return VCore::SVertex(
                     Convert::ToVVec3(Positions[p_Idx]),
                     Convert::ToVVec3(Normals[p_Idx]),
-                    Convert::ToColor(Colors[p_Idx]).AsABGR(),
+                    Convert::ToColor(Colors[p_Idx]).AsRGBA(),
                     3
                 );
             }
@@ -169,6 +172,8 @@ namespace VCoreGDExt
                 return typeid(nullptr);
             }
 #endif
+        private:
+            double m_ModelScale{1};
     };
 }
 

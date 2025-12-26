@@ -13,6 +13,11 @@ if(Emscripten)
     set(CMAKE_SHARED_LIBRARY_SUFFIX ".wasm")
 endif()
 
+set(VCORE_BUILD_ALL_IMPORTERS_BY_DEFAULT OFF)
+set(VCORE_BUILD_ALL_EXPORTERS_BY_DEFAULT OFF)
+set(VCORE_BUILD_GLTF_EXPORTER ON)
+set(VCORE_BUILD_MAGICAVOXEL_IMPORTER ON)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,7 +35,7 @@ if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/third-party/godot-cpp/CMakeLists.txt")
     )
 endif()
 
-if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/third-party/vcore/CMakeLists.txt")
+if (NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/third-party/vcore/lib/CMakeLists.txt")
     message(
         FATAL_ERROR
         "[${PROJECT_NAME}] The vcore submodule was not downloaded. Please update submodules: git submodule update --init --recursive."
@@ -56,17 +61,22 @@ include_directories("${PROJECT_SOURCE_DIR}/third-party/godot-cpp/gdextension"
                     "${CMAKE_CURRENT_BINARY_DIR}/third-party/godot-cpp/gen/include"
                     "${PROJECT_SOURCE_DIR}/include"
 )
+add_definitions(-DDEBUG)
 add_subdirectory(third-party/vcore/lib)
 
 add_dependencies(VCore godot-cpp)
 
 set(SRCS "${PROJECT_SOURCE_DIR}/src/VModel.cpp"
-         "${PROJECT_SOURCE_DIR}/src/VPackedScene.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VFileRef.cpp"
          "${PROJECT_SOURCE_DIR}/src/VMaterial.cpp"
          "${PROJECT_SOURCE_DIR}/src/VLoader.cpp"
          "${PROJECT_SOURCE_DIR}/src/VoxelStorage.cpp"
          "${PROJECT_SOURCE_DIR}/src/VExporter.cpp"
-         "${PROJECT_SOURCE_DIR}/src/GodotFileStream.cpp")
+         "${PROJECT_SOURCE_DIR}/src/GodotFileStream.cpp"
+         "${PROJECT_SOURCE_DIR}/src/EditorSceneFormatImporterVCore.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VCorePlugin.cpp"
+         "${PROJECT_SOURCE_DIR}/src/VConcavePolygonShape3D.cpp"
+         "${PROJECT_SOURCE_DIR}/doc_classes/doc_data.gen.cpp")
 
 include_directories("${PROJECT_SOURCE_DIR}/third-party/vcore/lib/include")
 add_library(${PROJECT_NAME} SHARED main.cpp ${SRCS})

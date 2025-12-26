@@ -1,4 +1,5 @@
 #include <GodotFileStream.hpp>
+#include <cstdint>
 
 CGodotFileStream::CGodotFileStream(const std::string &_File, const char *_OpenMode)
 {
@@ -15,9 +16,10 @@ CGodotFileStream::CGodotFileStream(const std::string &_File, const char *_OpenMo
     
     m_File = godot::FileAccess::open(_File.c_str(), (godot::FileAccess::ModeFlags)openFlag);
     m_FilePath = _File;
+    FillBuffer();
 }
 
-size_t CGodotFileStream::Read(char *_Buffer, size_t _Size)
+size_t CGodotFileStream::ReadInternal(char *_Buffer, size_t _Size)
 {
     if(m_File.is_null())
         return 0;
@@ -40,7 +42,7 @@ size_t CGodotFileStream::Write(const char *_Buffer, size_t _Size)
     return buffer.size();
 }
 
-void CGodotFileStream::Seek(size_t _Offset, VCore::SeekOrigin _Origin)
+void CGodotFileStream::SeekInternal(int64_t _Offset, VCore::SeekOrigin _Origin)
 {
     if(m_File.is_null() || _Offset > Size())
         return;
@@ -48,12 +50,12 @@ void CGodotFileStream::Seek(size_t _Offset, VCore::SeekOrigin _Origin)
     switch (_Origin)
     {
         case VCore::SeekOrigin::BEG: m_File->seek(_Offset); break;
-        case VCore::SeekOrigin::CUR: m_File->seek(Tell() + _Offset); break;
+        case VCore::SeekOrigin::CUR: m_File->seek(TellInternal() + _Offset); break;
         case VCore::SeekOrigin::END: m_File->seek_end(_Offset); break;
     }
 }
 
-size_t CGodotFileStream::Tell()
+size_t CGodotFileStream::TellInternal()
 {
     if(m_File.is_null())
         return 0;

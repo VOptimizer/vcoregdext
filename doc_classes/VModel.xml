@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="VModel" inherits="MeshInstance3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+				Clears all voxels.
+			</description>
+		</method>
+		<method name="generate_mesh">
+			<return type="void" />
+			<description>
+			Generates the vertex based mesh from the voxel data.
+			</description>
+		</method>
+		<method name="get_voxel">
+			<return type="Dictionary"/>
+			<param index="0" name="p_Pos" type="Vector3i" />
+			<description>
+			Gets a voxel a a given position. An empty dictionary means air, otherwise the format is as follows {"color": [Color], "material": [VMaterial], "transparent": [bool]}
+			</description>
+		</method>
+		<method name="has_voxel">
+			<return type="bool"/>
+			<param index="0" name="p_Pos" type="Vector3i" />
+			<description>
+			Returns true, if at p_Pos a voxel exists.
+			</description>
+		</method>
+		<method name="remove_voxel">
+			<return type="void" />
+			<param index="0" name="p_Pos" type="Vector3i" />
+			<description>
+			Removes a voxel on a given position.
+			</description>
+		</method>
+		<method name="set_voxel">
+			<return type="void" />
+			<param index="0" name="p_Pos" type="Vector3i" />
+			<param index="1" name="p_MaterialIdx" type="int" />
+			<param index="2" name="p_Color" type="Color" />
+			<description>
+			Sets a voxel at a given position. If p_MaterialIdx is invalid, the material will be fallback to the default one.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="frustum_culling_enabled" type="bool" setter="set_frustum_culling_enabled" getter="is_frustum_culling_enabled" default="false">
+		If frustum culling enabled is set to true, only chunks inside the frustum of the camera are meshed.
+		</member>
+		<member name="mesher_type" type="int" setter="set_mesher_type" getter="get_mesher_type" enum="VModel.MesherTypes" default="1">
+		Sets the mesher type. Each mesher type produces a more or less optimized vertex mesh.
+		</member>
+		<member name="model_type" type="int" setter="set_model_type" getter="get_model_type" enum="VModel.ModelTypes" default="0">
+		Sets the model type, which determines how the mesh of this model should be updated, when voxels are changed.
+		</member>
+	</members>
+	<constants>
+		<constant name="SIMPLE" value="0" enum="MesherTypes">
+		Generates for each visible voxel at least one face (Lots of faces)
+		</constant>
+		<constant name="GREEDY" value="1" enum="MesherTypes">
+		Similar voxels are grouped into one big face (Less faces)
+		</constant>
+		<constant name="GREEDY_CHUNKED" value="2" enum="MesherTypes">
+		Similar to greedy but only works on one chunk at the time. (Less faces but more than just greedy)
+		</constant>
+		<constant name="GREEDY_TEXTURED" value="3" enum="MesherTypes">
+		Voxels with similar material are grouped into one big face. Each voxel color is rendered onto a texture. (Less faces, if you have a lot of texture)
+		</constant>
+		<constant name="SMOOTH" value="4" enum="MesherTypes">
+		Generates a smooth surface using the Transvoxel algorithm (Lots of faces, but smoother)
+		</constant>
+		<constant name="STATIC" value="0" enum="ModelTypes">
+		The complete voxel model is generated everytime, if something changed.
+		</constant>
+		<constant name="DYNAMIC" value="1" enum="ModelTypes">
+		Only chunks which had been changed are remeshed.
+		</constant>
+	</constants>
+</class>

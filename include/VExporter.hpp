@@ -31,7 +31,7 @@
 #include <VCore/VCore.hpp>
 #include "GodotFileStream.hpp"
 #include "Helper/Convert.hpp"
-#include "godot_cpp/classes/node3d.hpp"
+#include <godot_cpp/classes/node3d.hpp>
 
 namespace VCoreGDExt
 {
@@ -72,7 +72,7 @@ namespace VCoreGDExt
             {
                 p_VNode->Name = p_Node->get_name().to_utf8_buffer().get_string_from_utf8().utf8().get_data();
                 p_VNode->Visible = p_Node->is_visible();
-                p_VNode->SetPosition(Convert::ToVVec3i(p_Node->get_position()));
+                p_VNode->SetPosition(Convert::ToVVec3(p_Node->get_position()));
                 p_VNode->SetScale(Convert::ToVVec3(p_Node->get_scale()));
                 p_VNode->SetRotation(Convert::ToVVec3(p_Node->get_rotation()));
             }

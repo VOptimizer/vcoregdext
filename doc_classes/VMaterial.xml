@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="VMaterial" inherits="Material" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_shader">
+			<return type="void" />
+			<param index="0" name="_unnamed_arg0" type="Shader" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="ior" type="float" setter="set_ior" getter="get_ior" default="0.0">
+		</member>
+		<member name="metallic" type="float" setter="set_metallic" getter="get_metallic" default="0.0">
+		</member>
+		<member name="name" type="String" setter="set_name" getter="get_name" default="&quot;&quot;">
+		</member>
+		<member name="power" type="float" setter="set_power" getter="get_power" default="0.0">
+		</member>
+		<member name="roughness" type="float" setter="set_roughness" getter="get_roughness" default="1.0">
+		</member>
+		<member name="specular" type="float" setter="set_specular" getter="get_specular" default="0.0">
+		</member>
+		<member name="transparency" type="float" setter="set_transparency" getter="get_transparency" default="0.0">
+		</member>
+	</members>
+</class>

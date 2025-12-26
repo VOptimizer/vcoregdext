@@ -5,7 +5,32 @@
 #include <godot_cpp/variant/vector3.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <godot_cpp/classes/image_texture.hpp>
+#include <godot_cpp/core/binder_common.hpp>
+#include <godot_cpp/core/method_ptrcall.hpp>
 #include <VCore/VCore.hpp>
+
+// Copy of VARIANT_ENUM_CAST for C++ enum class
+#define VARIANT_ENUM_CLASS_CAST(m_enum)                                \
+	namespace godot {                                                  \
+	MAKE_ENUM_TYPE_INFO(m_enum)                                        \
+	template <>                                                        \
+	struct VariantCaster<m_enum> {                                     \
+		static _FORCE_INLINE_ m_enum cast(const Variant &p_variant) {  \
+			return (m_enum)p_variant.operator int64_t();               \
+		}                                                              \
+	};                                                                 \
+	template <>                                                        \
+	struct PtrToArg<m_enum> {                                          \
+		_FORCE_INLINE_ static m_enum convert(const void *p_ptr) {      \
+			return m_enum(*reinterpret_cast<const int64_t *>(p_ptr));  \
+		}                                                              \
+		typedef int64_t EncodeT;                                       \
+		_FORCE_INLINE_ static void encode(m_enum p_val, void *p_ptr) { \
+			*reinterpret_cast<int64_t *>(p_ptr) = (int64_t)p_val;      \
+		}                                                              \
+	};                                                                 \
+	}
+
 
 namespace VCoreGDExt
 {
@@ -56,23 +81,23 @@ namespace VCoreGDExt
             return VCore::CColor(p_Color.r * 255.f, p_Color.g * 255.f, p_Color.b * 255.f, p_Color.a * 255.f);
         }
 
-        inline godot::Ref<godot::ImageTexture> TextureToGodot(const VCore::Texture &_Texture)
-        {
-            // Converts the colorpalette to a texture for godot.
-            godot::Ref<godot::Image> img = godot::Image::create(_Texture->GetSize().x, _Texture->GetSize().y, false, godot::Image::Format::FORMAT_RGBA8);
-            for (size_t x = 0; x < _Texture->GetSize().x; x++)
-            {
-                for (size_t y = 0; y < _Texture->GetSize().y; y++)
-                {
-                    VCore::CColor c;
-                    c.FromARGB(_Texture->GetPixel(VCore::Math::Vec2ui(x, y)));
+        // inline godot::Ref<godot::ImageTexture> TextureToGodot(const VCore::Texture &_Texture)
+        // {
+        //     // Converts the colorpalette to a texture for godot.
+        //     godot::Ref<godot::Image> img = godot::Image::create(_Texture->GetSize().x, _Texture->GetSize().y, false, godot::Image::Format::FORMAT_RGBA8);
+        //     for (size_t x = 0; x < _Texture->GetSize().x; x++)
+        //     {
+        //         for (size_t y = 0; y < _Texture->GetSize().y; y++)
+        //         {
+        //             VCore::CColor c;
+        //             c.FromARGB(_Texture->GetPixel(VCore::Math::Vec2ui(x, y)));
 
-                    img->set_pixel(x, y, godot::Color(c.R / 255.f, c.G / 255.f, c.B / 255.f, c.A / 255.f));
-                }
-            }
+        //             img->set_pixel(x, y, godot::Color(c.R / 255.f, c.G / 255.f, c.B / 255.f, c.A / 255.f));
+        //         }
+        //     }
 
-            return godot::ImageTexture::create_from_image(img);
-        }
+        //     return godot::ImageTexture::create_from_image(img);
+        // }
 
         inline VCore::Texture GodotToTexture(const godot::Ref<godot::ImageTexture> &_Texture)
         {
